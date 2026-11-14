@@ -179,6 +179,34 @@ const CHARACTERS = {
   }
 };
 
+/*
+ * Apparence des personnages sur le plateau (dessinés sur le canvas).
+ * hair: couleur des cheveux · style: coupe · outfit: couleur de la tunique
+ * trim: ceinture/liseré · prop: arme ou objet tenu · orb: orbe du bâton
+ */
+const CHAR_ART = {
+  frieren: { hair: '#e9e7f2', style: 'twintails', outfit: '#dcd7e8', trim: '#b89a5a', prop: 'staff', orb: '#b34a4a' },
+  fern:    { hair: '#7a5c9e', style: 'long', outfit: '#4a3a5e', trim: '#8a7ab0', prop: 'staff', orb: '#9a6fd8' },
+  stark:   { hair: '#8f4a2f', style: 'short', outfit: '#6f7268', trim: '#4a4c44', prop: 'axe' },
+  heiter:  { hair: '#e8e4da', style: 'short', outfit: '#4f7f5f', trim: '#d8cf9a', prop: 'holy' },
+  himmel:  { hair: '#7aa5d8', style: 'short', outfit: '#cfd8e8', trim: '#5f7fa8', prop: 'sword' },
+  eisen:   { hair: '#b8b8c0', style: 'beard', outfit: '#4a4038', trim: '#6f5f4f', prop: 'axe' },
+  sein:    { hair: '#6f9f5f', style: 'short', outfit: '#5f7f4f', trim: '#c9b87a', prop: 'holy' },
+  kraft:   { hair: '#d8c06f', style: 'short', outfit: '#8f7f5f', trim: '#5f5340', prop: 'sword' },
+  aura:    { hair: '#5f2f2f', style: 'twintails', outfit: '#3f2f3f', trim: '#8f3f3f', prop: 'sword', horns: true },
+  lugner:  { hair: '#cfc3d8', style: 'short', outfit: '#5f2f3f', trim: '#8f4f5f', prop: 'none', horns: true },
+  denken:  { hair: '#9a9aa5', style: 'short', outfit: '#6f5f4f', trim: '#4f4438', prop: 'staff', orb: '#7f8fd8' },
+  ubel:    { hair: '#5f8f6f', style: 'bob', outfit: '#3f5f4f', trim: '#2f4a3a', prop: 'none' },
+  wirbel:  { hair: '#4a4a55', style: 'short', outfit: '#5f6f8f', trim: '#3f4a5f', prop: 'staff', orb: '#8fa0d8' },
+  land:    { hair: '#cfc08f', style: 'short', outfit: '#7f8f6f', trim: '#5f6f4f', prop: 'staff', orb: '#a0c08f' },
+  methode: { hair: '#d88fa5', style: 'long', outfit: '#8f5f7f', trim: '#5f3f4f', prop: 'staff', orb: '#d86f9f' },
+  sense:   { hair: '#3f5f4f', style: 'long', outfit: '#4f6f5f', trim: '#2f4a3f', prop: 'none' },
+  flamme:  { hair: '#f0e8e0', style: 'long', outfit: '#e8dcc8', trim: '#c9a85a', prop: 'staff', orb: '#e89a4f' },
+  macht:   { hair: '#d8b86f', style: 'short', outfit: '#4f4a3f', trim: '#b8912f', prop: 'staff', orb: '#e8c85f', horns: true },
+  solitar: { hair: '#4f3f5f', style: 'long', outfit: '#3f2f4f', trim: '#6f4f7f', prop: 'none', horns: true },
+  clone:   { hair: '#cfc08f', style: 'short', outfit: '#7f8f6f', trim: '#5f6f4f', prop: 'staff', orb: '#a0c08f' }
+};
+
 const CLONE_DEF = {
   id: 'clone', name: 'Clone', cls: 'Clone', color: '#7f8f4f',
   abilities: [

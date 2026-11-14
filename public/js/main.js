@@ -567,54 +567,255 @@ function drawBoard() {
     if (!u.alive) continue;
     drawUnit(ctx, u);
   }
+
+  // Étiquette de survol
+  if (hoverCell) {
+    const hu = unitAt(state, hoverCell.x, hoverCell.y);
+    if (hu) {
+      const label = hu.name + '  ' + hu.hp + '/' + hu.maxHp + ' PV';
+      ctx.font = 'bold 12px sans-serif';
+      const tw = ctx.measureText(label).width + 14;
+      const lx = Math.min(Math.max(hu.x * CELL + CELL / 2 - tw / 2, 2), canvas.width - tw - 2);
+      const ly = Math.max(hu.y * CELL - 24, 2);
+      ctx.fillStyle = 'rgba(15,10,22,.85)';
+      ctx.fillRect(lx, ly, tw, 18);
+      ctx.strokeStyle = 'rgba(216,176,79,.7)';
+      ctx.strokeRect(lx, ly, tw, 18);
+      ctx.fillStyle = '#efe6f5';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(label, lx + 7, ly + 9.5);
+    }
+  }
+}
+
+/* ---- dessin des personnages sur le plateau ---- */
+
+const TEAM_COLORS = { p1: '#3b6fd6', p2: '#d05038' };
+const SKIN = '#f2cfae';
+const SKIN_DARK = '#d9ae87';
+const OUTLINE = 'rgba(30,20,40,.55)';
+
+function drawShadowAndRing(ctx, cx, cy, u) {
+  ctx.fillStyle = 'rgba(0,0,0,.28)';
+  ctx.beginPath();
+  ctx.ellipse(cx, cy + 19, 13, 4, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = TEAM_COLORS[u.owner];
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.ellipse(cx, cy + 19, 15, 5.5, 0, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.lineWidth = 1;
+}
+
+function drawHairBack(ctx, cx, cy, art) {
+  ctx.fillStyle = art.hair;
+  if (art.style === 'long') {
+    ctx.beginPath();
+    ctx.ellipse(cx, cy + 2, 10, 15, 0, 0, Math.PI * 2);
+    ctx.fill();
+  } else if (art.style === 'twintails') {
+    for (const side of [-1, 1]) {
+      ctx.beginPath();
+      ctx.ellipse(cx + side * 11, cy - 1, 3.6, 11, side * 0.28, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+}
+
+function drawBody(ctx, cx, cy, art) {
+  ctx.beginPath();
+  ctx.moveTo(cx - 8, cy - 3);
+  ctx.quadraticCurveTo(cx, cy - 7, cx + 8, cy - 3);
+  ctx.lineTo(cx + 10, cy + 14);
+  ctx.quadraticCurveTo(cx, cy + 17, cx - 10, cy + 14);
+  ctx.closePath();
+  ctx.fillStyle = art.outfit;
+  ctx.fill();
+  ctx.strokeStyle = OUTLINE;
+  ctx.stroke();
+  ctx.globalAlpha = 0.85;
+  ctx.fillStyle = art.trim;
+  ctx.fillRect(cx - 9, cy + 3, 18, 3);
+  ctx.globalAlpha = 1;
+}
+
+function drawHead(ctx, cx, cy, art) {
+  ctx.beginPath();
+  ctx.arc(cx, cy - 11, 8.5, 0, Math.PI * 2);
+  ctx.fillStyle = SKIN;
+  ctx.fill();
+  ctx.strokeStyle = SKIN_DARK;
+  ctx.stroke();
+
+  if (art.style === 'beard') {
+    ctx.fillStyle = art.hair;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy - 5.5, 5.6, 4.4, 0, 0, Math.PI);
+    ctx.fill();
+  }
+
+  ctx.fillStyle = art.hair;
+  ctx.beginPath();
+  ctx.arc(cx, cy - 11.5, 9.1, Math.PI * 1.02, Math.PI * 1.98);
+  ctx.fill();
+  if (art.style === 'bob') {
+    ctx.fillRect(cx - 9.1, cy - 13, 3.4, 8);
+    ctx.fillRect(cx + 5.7, cy - 13, 3.4, 8);
+  } else if (art.style === 'short' || art.style === 'beard') {
+    ctx.fillRect(cx - 9.1, cy - 13, 2.6, 5);
+    ctx.fillRect(cx + 6.5, cy - 13, 2.6, 5);
+  }
+
+  ctx.fillStyle = '#2a2330';
+  ctx.beginPath();
+  ctx.arc(cx - 3, cy - 10.5, 1.4, 0, Math.PI * 2);
+  ctx.arc(cx + 3, cy - 10.5, 1.4, 0, Math.PI * 2);
+  ctx.fill();
+
+  if (art.horns) {
+    ctx.fillStyle = '#ddd2c0';
+    ctx.strokeStyle = OUTLINE;
+    for (const side of [-1, 1]) {
+      ctx.beginPath();
+      ctx.moveTo(cx + side * 4, cy - 18.5);
+      ctx.lineTo(cx + side * 7.5, cy - 25);
+      ctx.lineTo(cx + side * 8.5, cy - 17.5);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+  }
+}
+
+function drawProp(ctx, cx, cy, art) {
+  if (art.prop === 'staff' || art.prop === 'holy') {
+    ctx.strokeStyle = '#6f5238';
+    ctx.lineWidth = 2.4;
+    ctx.beginPath();
+    ctx.moveTo(cx + 11, cy + 15);
+    ctx.lineTo(cx + 16, cy - 15);
+    ctx.stroke();
+    ctx.lineWidth = 1;
+    if (art.prop === 'staff') {
+      ctx.fillStyle = art.orb;
+      ctx.beginPath();
+      ctx.arc(cx + 16.5, cy - 18, 3.6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 0.35;
+      ctx.beginPath();
+      ctx.arc(cx + 16.5, cy - 18, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    } else {
+      ctx.strokeStyle = art.trim;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(cx + 12.5, cy - 20);
+      ctx.lineTo(cx + 19.5, cy - 20);
+      ctx.moveTo(cx + 16, cy - 23.5);
+      ctx.lineTo(cx + 16, cy - 16.5);
+      ctx.stroke();
+      ctx.lineWidth = 1;
+    }
+  } else if (art.prop === 'sword') {
+    ctx.strokeStyle = '#b8c0cc';
+    ctx.lineWidth = 2.4;
+    ctx.beginPath();
+    ctx.moveTo(cx + 10, cy + 10);
+    ctx.lineTo(cx + 14.5, cy - 11);
+    ctx.stroke();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = '#6f5238';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(cx + 8.5, cy + 6.5);
+    ctx.lineTo(cx + 13.5, cy + 9);
+    ctx.stroke();
+    ctx.lineWidth = 1;
+  } else if (art.prop === 'axe') {
+    ctx.strokeStyle = '#6f5238';
+    ctx.lineWidth = 2.4;
+    ctx.beginPath();
+    ctx.moveTo(cx + 9, cy + 14);
+    ctx.lineTo(cx + 15, cy - 11);
+    ctx.stroke();
+    ctx.lineWidth = 1;
+    ctx.fillStyle = '#9aa0a8';
+    ctx.strokeStyle = OUTLINE;
+    ctx.beginPath();
+    ctx.moveTo(cx + 11, cy - 13);
+    ctx.lineTo(cx + 20, cy - 11);
+    ctx.lineTo(cx + 15.5, cy - 4);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+  }
 }
 
 function drawUnit(ctx, u) {
   const cx = u.x * CELL + CELL / 2;
   const cy = u.y * CELL + CELL / 2;
-  const isMine = u.owner === myRole;
   const isActive = myTurn() && u.owner === state.current && !u.acted && !u.moved;
+  const art = CHAR_ART[u.charId] || CHAR_ART.clone;
 
-  // disque
-  ctx.beginPath();
-  ctx.arc(cx, cy, 19, 0, Math.PI * 2);
-  ctx.fillStyle = u.owner === 'p1' ? '#3b6fd6' : '#d05038';
-  ctx.fill();
-  ctx.lineWidth = 3;
-  ctx.strokeStyle = sel === u.id ? '#ffffff' : (isActive ? '#ffd75e' : 'rgba(0,0,0,.4)');
-  ctx.stroke();
-  ctx.lineWidth = 1;
+  ctx.save();
+  if (u.isClone) ctx.globalAlpha = 0.72;
 
-  if (u.acted && u.owner === state.current) {
-    ctx.fillStyle = 'rgba(0,0,0,.35)';
+  drawShadowAndRing(ctx, cx, cy, u);
+  drawHairBack(ctx, cx, cy, art);
+  drawBody(ctx, cx, cy, art);
+  drawHead(ctx, cx, cy, art);
+  drawProp(ctx, cx, cy, art);
+
+  ctx.restore();
+
+  if (u.acted && u.owner === state.current && !u.isClone) {
+    ctx.fillStyle = 'rgba(20,12,30,.32)';
+    ctx.beginPath();
+    ctx.arc(cx, cy, 20, 0, Math.PI * 2);
     ctx.fill();
   }
 
-  // initiales
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 15px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  const initials = u.name.slice(0, 2);
-  ctx.fillText(initials, cx, cy + 1);
+  if (sel === u.id) {
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy + 19, 17.5, 7, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.lineWidth = 1;
+  } else if (isActive) {
+    ctx.strokeStyle = '#ffd75e';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy + 19, 17.5, 7, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.lineWidth = 1;
+  }
 
-  // barre de PV
+  drawHealthBar(ctx, cx, cy, u);
+  drawStatusIcons(ctx, cx, cy, u);
+}
+
+function drawHealthBar(ctx, cx, cy, u) {
   const bw = 40, bh = 6;
-  const bx = cx - bw / 2, by = cy - 30;
+  const bx = cx - bw / 2, by = cy - 32;
   ctx.fillStyle = 'rgba(0,0,0,.6)';
   ctx.fillRect(bx - 1, by - 1, bw + 2, bh + 2);
   const pct = Math.max(0, u.hp / u.maxHp);
   ctx.fillStyle = pct > 0.5 ? '#5cb85c' : (pct > 0.25 ? '#d8a04f' : '#d9534f');
   ctx.fillRect(bx, by, bw * pct, bh);
+}
 
-  // statuts
+function drawStatusIcons(ctx, cx, cy, u) {
+  ctx.font = '11px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
   let sx = cx - 14;
   for (const s of u.statuses) {
-    if (s.s === 'stun') { ctx.font = '11px sans-serif'; ctx.fillText('💤', sx, cy + 26); sx += 14; }
-    else if (s.s === 'shield') { ctx.font = '11px sans-serif'; ctx.fillText('🛡', sx, cy + 26); sx += 14; }
-    else if (s.s === 'noHeal') { ctx.font = '11px sans-serif'; ctx.fillText('🚫', sx, cy + 26); sx += 14; }
-    else if (s.s === 'atkUp') { ctx.font = '11px sans-serif'; ctx.fillText('⬆', sx, cy + 26); sx += 14; }
-    else if (s.s === 'atkDown') { ctx.font = '11px sans-serif'; ctx.fillText('⬇', sx, cy + 26); sx += 14; }
+    const icon = { stun: '💤', shield: '🛡', noHeal: '🚫', atkUp: '⬆', atkDown: '⬇' }[s.s];
+    if (icon) { ctx.fillText(icon, sx, cy + 27); sx += 14; }
   }
 }
 
