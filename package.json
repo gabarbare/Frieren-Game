@@ -1,0 +1,16 @@
+{
+  "name": "frieren-tactics",
+  "version": "1.0.0",
+  "description": "Jeu de stratégie tactique en ligne inspiré de l'univers de Frieren (saisons 1 et 2)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/logic.test.js && node test/net.test.js"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

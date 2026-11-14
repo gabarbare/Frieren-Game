@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Frieren Tactics — Stratégie au tour par tour</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪄</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- Écran d'accueil -->
+    <div id="screen-home" class="screen">
+      <div class="panel home-panel">
+        <h1 class="title">Frieren Tactics</h1>
+        <p class="subtitle">Jeu de stratégie au tour par tour dans l'univers de Frieren.<br>
+        Constitue ton équipe de 4 héros et vaincs celle de ton adversaire !</p>
+        <div class="form-row">
+          <label for="name-input">Ton nom de joueur</label>
+          <input id="name-input" maxlength="20" placeholder="Ex : FrierenFan">
+        </div>
+        <div class="form-row buttons">
+          <button id="btn-create" class="btn primary">Créer une partie</button>
+        </div>
+        <div class="form-row join-row">
+          <input id="code-input" maxlength="4" placeholder="CODE" class="code-input">
+          <button id="btn-join" class="btn">Rejoindre</button>
+        </div>
+        <div id="home-error" class="error"></div>
+        <div id="home-coins" class="coins-line"></div>
+      </div>
+    </div>
+
+    <!-- Écran lobby : choix de la carte + équipe -->
+    <div id="screen-lobby" class="screen hidden">
+      <div class="lobby-wrap">
+        <div class="panel lobby-info">
+          <h2>Salle d'attente</h2>
+          <div class="code-display">Code de partie : <span id="lobby-code">----</span></div>
+          <p class="hint">Donne ce code à ton adversaire pour qu'il te rejoigne.</p>
+          <div id="lobby-players"></div>
+          <div id="map-select"></div>
+        </div>
+        <div class="panel team-panel">
+          <h2>Choisis tes 4 personnages</h2>
+          <div id="team-picked" class="team-picked"></div>
+          <div id="char-grid" class="char-grid"></div>
+          <div class="lobby-actions">
+            <button id="btn-ready" class="btn primary" disabled>Prêt ! (0/4)</button>
+            <span id="lobby-status"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Écran de jeu -->
+    <div id="screen-game" class="screen hidden">
+      <div id="game-top">
+        <span id="top-round"></span>
+        <span id="top-turn"></span>
+        <span id="top-players"></span>
+      </div>
+      <div id="game-main">
+        <canvas id="board" width="728" height="504"></canvas>
+        <div id="side">
+          <div id="unit-panel" class="panel small"></div>
+          <div id="abilities"></div>
+          <button id="btn-end" class="btn danger">Fin du tour</button>
+          <div id="log" class="panel small"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Écran boutique / améliorations -->
+    <div id="screen-shop" class="screen hidden">
+      <div class="panel shop-panel">
+        <h2>Améliorations</h2>
+        <div id="shop-coins" class="coins-line"></div>
+        <p class="hint">Gagne des pièces en remportant des combats. Chaque personnage peut monter jusqu'au niveau 5 :
+        +8% PV, +6% ATQ, +5% DÉF par niveau, +1 VIT aux niveaux 3 et 5.</p>
+        <div id="shop-grid" class="char-grid"></div>
+        <div class="lobby-actions">
+          <button id="btn-rematch" class="btn primary">Prêt pour la revanche</button>
+          <span id="shop-status"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overlay de fin de match / messages -->
+    <div id="overlay" class="hidden">
+      <div class="panel overlay-panel">
+        <h2 id="overlay-title"></h2>
+        <p id="overlay-text"></p>
+        <button id="overlay-btn" class="btn primary"></button>
+      </div>
+    </div>
+
+  </div>
+  <script src="js/data.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
